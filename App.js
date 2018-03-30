@@ -13,6 +13,7 @@ import { connect } from 'react-redux';
 // Pages/Components imports
 import Header from  './components/header/';
 import Login from './components/login';
+import CoursesList from './components/coursesList';
 
 // import login action
 import { userAuthentication } from './actions/authentication';
@@ -36,7 +37,8 @@ class App extends Component {
 
           {
             (!this.props.auth.currentUser && !this.props.auth.authHeaders) ? 
-              <Login /> : <Button onPress={() => this.props.authtenticateUser(false, "", "", this.props.auth.authHeaders)} title="Log Out"/>
+              <Login /> : <CoursesList/>
+              //<Button onPress={() => this.props.authtenticateUser(false, "", "", this.props.auth.authHeaders)} title="Log Out"/>
           } 
 
         </View>

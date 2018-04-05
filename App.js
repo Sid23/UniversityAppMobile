@@ -22,8 +22,10 @@ import { userAuthentication } from './actions/authentication';
 const HEADER_HEIGHT = 65;
 
 class App extends Component {
-  render() {
 
+  render() {
+    
+    console.log("Render app edit")
     return (
 
       <View style={styles.appContainer}>
@@ -35,11 +37,11 @@ class App extends Component {
 
         <View style={styles.pageContainer}>
 
-          {
-            (!this.props.auth.currentUser && !this.props.auth.authHeaders) ? 
-              <Login /> : <CoursesList/>
-              //<Button onPress={() => this.props.authtenticateUser(false, "", "", this.props.auth.authHeaders)} title="Log Out"/>
-          } 
+        {
+            (!this.props.auth.currentUser || !this.props.auth.authHeaders) ? 
+                <Login /> : <CoursesList/>
+            //<Button onPress={() => this.props.authtenticateUser(false, "", "", this.props.auth.authHeaders)} title="Log Out"/>
+        } 
 
         </View>
       </View>
@@ -48,6 +50,7 @@ class App extends Component {
 }
 
 function mapStateToProps(state) {
+  console.log("State:", state);
   return {
       auth: state.auth
   }

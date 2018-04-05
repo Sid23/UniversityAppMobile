@@ -3,11 +3,6 @@ import axios from 'axios';
 import { SERVER_URL } from '../config/url';
 
 export function serverRequest(relativePath, method, header, body, authHeaders = null) {
-    console.log("Server Request parameters:")
-    console.log(method)
-    console.log(relativePath)
-    console.log(authHeaders)
-    console.log(body)
 
     return axios.request({
         url: SERVER_URL + relativePath,

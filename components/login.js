@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Platform, StyleSheet, TextInput, Text, View, Button, Dimensions } from 'react-native';
+import { Platform, StyleSheet, TextInput, Text, View, Button } from 'react-native';
 import { connect } from 'react-redux';
 
 // import login action
@@ -21,21 +21,7 @@ class Login extends Component {
         this.props.authtenticateUser(this.state.user, this.state.password)
         //this.setState({user: "", password: ""});
     }
-/*
-    componentDidUpdate() {
-        // Stable situation, called every time after 
-        if (this.props.authentication.loggedIn &&
-            this.props.authentication.authenticationHeaders &&
-            !this.props.authentication.error) {
-                console.log("Go to student home page!!");
-                console.log("props: ", this.props);
-                // Access to the history object and navigate to the logged student page
-                this.props.history.push(`/students/${this.props.authentication.currentUser.id}`);
-            } else {
-                console.log("Log in failed");
-            }
-    }
-*/
+
     render () {
         return (
 
@@ -51,7 +37,7 @@ class Login extends Component {
                     <TextInput onChangeText={(password) => this.setState({password})} style={styles.inputText} placeholder="enter password..." secureTextEntry={true} value={this.state.password} />
                 </View>
 
-                <View style={{width: 0.3 * Dimensions.get('window').width, marginTop: 15}}>
+                <View style={{width: '30%', marginTop: 15}}>
                     <Button onPress={this.doLogin} title="Log In" />
                 </View>
 
@@ -77,7 +63,7 @@ const styles = StyleSheet.create({
     },
     blockContainer: {
         backgroundColor: 'white',
-        width: 0.8 * Dimensions.get('window').width,
+        width: '80%',
         borderWidth: 1,
         borderRadius: 5,
         marginTop: 10,

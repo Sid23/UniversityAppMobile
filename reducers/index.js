@@ -7,7 +7,6 @@ import storage from 'redux-persist/lib/storage';
 import thunk from 'redux-thunk';
 // import login reducer
 import AuthenticationReducer from './authentication';
-import CoursesReducer from './courses';
 
 // Add the reducer to your store on the `router` key
 // Also apply our middleware for navigating
@@ -24,8 +23,8 @@ const persistConfig = {
 // Create root reducer as combination of all reducers
 const rootReducer = combineReducers({
     // Make this reducer persistent
-    auth: persistReducer(persistConfig, AuthenticationReducer),
-    courses: CoursesReducer
+    auth: persistReducer(persistConfig, AuthenticationReducer)
+    //auth: AuthenticationReducer
 })
 
 // Exports needed by index.js

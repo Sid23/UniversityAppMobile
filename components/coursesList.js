@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
-import { Platform, StyleSheet, TextInput, Text, View, Button, Dimensions, FlatList, ListItem, List } from 'react-native';
+import { Platform, StyleSheet, Text, View, ActivityIndicator, FlatList } from 'react-native';
 import { connect } from 'react-redux';
 
-// import login action
-import { fetchCourses } from '../actions/courses';
+// import courses utils functions
+import { fetchCourses } from '../utils/courses';
+import { serverRequest } from '../actions/shared';
 
 class CoursesList extends Component {
 
@@ -12,79 +13,153 @@ class CoursesList extends Component {
 
         // Component state
         this.state = {
+            coursesList: [],
             loading: false,
-            coursesList: [
-                {
-                    "id": 27,
-                    "code": "123VBG3Y",
-                    "name": "Course3",
-                    "year": 2013,
-                    "difficulty": 2
-                },
-                {
-                    "id": 3,
-                    "code": "AAAABBCC",
-                    "name": "Course2",
-                    "year": 2013,
-                    "difficulty": 5
-                },
-                {
-                    "id": 30,
-                    "code": "12DV78YS",
-                    "name": "Prova",
-                    "year": 2012,
-                    "difficulty": 1
-                }
-            ],
-            page: 1,
-            seed: 1,
-            error: null,
             refreshing: false,
+            page: 1,
+            nPages: 1,
+            error: null
         };
     }
 
-    componentDidMount() {
-        console.log("Fetching courses...") 
-        this.props.fetchCourses(this.props.auth.authHeaders)
+    makeRemoteRequest = () => {
+        
+        if (this.state.page <= this.state.nPages) {
+
+            console.log("## Request with page: ", this.state.page)
+
+            serverRequest(
+                `/courses?page=${this.state.page}`,
+                'get',
+                // Header of the request
+                {},
+                // Body of the request
+                {},
+                this.props.auth.authHeaders
+            ).then( 
+                res => {
+                    if(res.status >= 300) {
+                        this.setState({error: res.data.errors[0], cousesList: null, loading: false})
+                        return
+                    }
+
+                    // Returns list of courses
+                    this.setState({
+                        coursesList: (res.data) ? (this.state.page === 1 ? res.data : [...this.state.coursesList, ...res.data]) : null,
+                        nPages: (parseInt(res.headers.total) / parseInt(res.headers['per-page']) + 1),
+                        error: (res.data.errors) ? response.data.errors[0] : null,
+                        loading: false,
+                        refreshing: false
+                    }, console.log("XXXXXX State changed: ", this.state))
+                }
+            ).catch(
+                error => {
+                    console.log("fetch courses error: ", error);
+                    this.setState({ error, data: null, loading: false })
+                }
+            )
+        }
     }
+
+    componentDidMount() {
+        console.log("CoursesList DidMount...") 
+        this.makeRemoteRequest()
+    }
+
+    renderItemSeparator = () => {
+        return(
+            <View style={{
+                    marginVertical: 5,
+                    height: 1,
+                    backgroundColor: "black",
+                    marginHorizontal: "2%"
+                }} />
+        );
+    }
+
+    renderFooter = () => {
+        // Do not show footer if there is any incoming network request
+        if (!this.state.loading) return null;
+    
+        return (
+            <ActivityIndicator size="large" />
+        );
+    }
+
+    // Triggered when the end of the list is reached
+    loadMoreElements = () => {
+        console.log("Loading more elements....");
+        // Update page number, and define its callback
+        this.setState(
+            {
+                page: this.state.page + 1
+            }, () => {
+                console.log("Page changed to : ", this.state.page);
+                this.makeRemoteRequest();
+            }
+        );
+    }
+
+    // method called when the list refresh is needed
+    refreshList = () => {
+        console.log("List refreshing....");
+        this.setState({
+            // Reset the page
+            page: 1,
+            refreshing: true
+          },() => {
+            // After page is reset, make the backend request again
+            this.makeRemoteRequest();
+          }
+        );
+      };
 
     render () {
         return (
             <View style={styles.coursesListContainer}>
-
-            
-                    <FlatList
-                        data={this.state.coursesList}
-                        renderItem={({ item }) => (
-                            <ListItem
-                              title={`${item.name}`}
-                              subtitle={item.year}
-                              keyExtractor={item => item.id}
-                            />
-                          )}
-                        
-                    />
-                
-
-            </View>
+                <FlatList
+                    data={this.state.coursesList}
+                    renderItem={({ item }) => (
+                        <ListItem
+                            code={item.code}
+                            name={item.name}
+                            year={item.year}
+                            difficulty={item.difficulty}
+                        />
+                    )}  
+                    keyExtractor={item => item.id.toString()}
+                    ItemSeparatorComponent={this.renderItemSeparator}
+                    ListFooterComponent={this.renderFooter}
+                    onEndReached={this.loadMoreElements}
+                    onEndReachedThreshold={0.01}
+                    refreshing={this.state.refreshing}
+                    onRefresh={this.refreshList}
+                />
+            </View>   
         );
     }
 }
 
+
 function mapStateToProps(state) {
     return {
-        auth: state.auth,
-        courses: state.courses
+        auth: state.auth
     }
 }
+  
+export default connect(mapStateToProps, null)(CoursesList);
 
-function mapDispatchToProps(dispatch) {
-    return {
-        fetchCourses: (authHeaders) => dispatch(fetchCourses(authHeaders))
+// Component that define the rendered item into a list
+class ListItem extends Component {
+    render(){
+        return (
+            <View style={{marginHorizontal: "2%"}}>
+                <Text>{this.props.code.toUpperCase()} - {this.props.name}</Text>
+                <Text>Year {this.props.year}, difficulty: {this.props.difficulty}</Text>
+            </View>
+        );
     }
 }
-
-export default connect(mapStateToProps, mapDispatchToProps)(CoursesList);
 
 const styles = StyleSheet.create({
     coursesListContainer: {

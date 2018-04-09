@@ -16,10 +16,10 @@ export default function(state = INITIAL_STATE, action) {
         
         case AuthenticationActions.DO_LOGIN:
             newState = {...state};
-            console.log("You are now logged in !");
             newState.currentUser = action.payload.currentUser;
             newState.authHeaders = action.payload.authHeaders;
             newState.error = null;
+            console.log("You are now logged in !");
             return newState;
                 
         case AuthenticationActions.LOGIN_ERROR:
@@ -42,6 +42,12 @@ export default function(state = INITIAL_STATE, action) {
         case AuthenticationActions.LOGOUT_ERROR:
             newState = {...state};
             console.log("Log out error !");
+            return newState;
+
+        case AuthenticationActions.UPDATE_CURRENT_USER:
+            newState = {...state};
+            newState.currentUser = action.payload
+            console.log("Current user updated !");
             return newState;
 
         // Redux persist action

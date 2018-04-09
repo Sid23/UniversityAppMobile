@@ -3,4 +3,5 @@ export const AuthenticationActions = {
     LOGIN_ERROR: "LOGIN_ERROR",
     DO_LOGOUT: "DO_LOGOUT",
     LOGOUT_ERROR: "LOGOUT_ERROR",
+    UPDATE_CURRENT_USER: "UPDATE_CURRENT_USER"
  };

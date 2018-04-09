@@ -7,16 +7,7 @@ import {
   View, Button
 } from 'react-native';
 
-// Import login action
-import {userAuthentication} from '../../actions/authentication';
-
-class Header extends Component {
-
-    doLogOut = () => {
-        console.log('Post User Log Out to the backend server');
-        this.props.authtenticateUser(this.props.auth.authHeaders)
-        //this.setState({user: "", password: ""});
-    }
+export default class Header extends Component {
 
   render() {
     return (
@@ -25,9 +16,7 @@ class Header extends Component {
 
             </View>
             <View style={styles.title}>
-                {
-                    (this.props.auth.currentUser) ? <Button title="Log Out" onPress={this.doLogOut} /> : <Text />
-                }
+
             </View>
             <View style={styles.menu}>
         
@@ -36,20 +25,6 @@ class Header extends Component {
     );
   }
 }
-
-function mapStateToProps(state) {
-    return {
-        auth: state.auth
-    }
-}
-
-function mapDispatchToProps(dispatch) {
-    return {
-        authtenticateUser: (authHeaders) => dispatch(userAuthentication(false, authHeaders=authHeaders)),
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Header)
 
 const styles = StyleSheet.create({
     container: {

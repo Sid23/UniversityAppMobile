@@ -3,6 +3,7 @@
 // each action has its own type to be identified and its payload (useful data)
 import { AuthenticationActions } from "./"
 import { serverRequest, getStudentDetails } from './shared';
+import { fetchStudent } from "../utils/students";
 
 
 // This function is based on action parameters used to identify a login or logout action
@@ -59,4 +60,36 @@ export function userAuthentication(action, email="", password="", authHeaders={}
                 })
             })
     }
+}
+
+// This action is dispatched every time the user home page is mounted.
+// It requests again for the current user, and update it, to improve data consistency within the db on the backend
+export function refreshCurrentUser(id, authHeaders) {
+
+    return function(dispatch) {
+        
+        fetchStudent(id, authHeaders)
+            .then(
+                response => {
+
+                    if(response.status >= 300)
+                        // If there are some problems do nothing, current user is already present
+                        return;
+
+                    // Dispatch the update user actions, which update the current user
+                    dispatch({
+                        type: AuthenticationActions.UPDATE_CURRENT_USER,
+                        payload: getStudentDetails(response)
+                    })
+                }
+            )
+            .catch(
+                error => {
+                    console.log("Current user update error: ", error);
+                    if(response.status >= 300)
+                        // If there are some problems do nothing, current user is already present
+                        return;
+                }
+            )
+        }
 }

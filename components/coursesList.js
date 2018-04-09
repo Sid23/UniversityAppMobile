@@ -8,6 +8,10 @@ import { serverRequest } from '../actions/shared';
 
 class CoursesList extends Component {
 
+    static navigationOptions = {
+        title: 'CoursesList',
+      };
+
     constructor(props) {
         super(props);
 
